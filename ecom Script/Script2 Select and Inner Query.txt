@@ -1,0 +1,85 @@
+# we used In it is used to filter the subquery 
+# where use before group By 
+# having is used after group by 
+
+# all orders from customer Id = 5
+SELECT * FROM productOrder WHERE CustomerID = 5;
+
+#order Order Items of Order Id 109 and 114 which came from 1st query , order by customerId = 5
+SELECT * FROM OrderItem WHERE OrderID = 109 AND 114; # this Query will not work and gives you only 109 data 
+			#Since a single OrderID can't be both 109 and 114 simultaneously, the condition always fails
+            # correct syntax will be 
+
+# option 1
+SELECT * FROM OrderItem WHERE OrderID = 109 or OrderID = 114; 
+	# why or why not AND
+    # AND	Match all conditions	but doesn't work with same coulmn (not for same column)
+# option2 
+SELECT * FROM OrderItem WHERE OrderID IN (109, 114);     
+
+# for and case is quantity > 1 and unitprice < 58000 ;
+SELECT * FROM OrderItem WHERE quantity > 1 AND unitprice < 58000 ;   
+
+#use of having :  i want product details where average rating is more than 4
+SELECT ProductID, ROUND(AVG(Rating), 1) AS AvgRating
+FROM Feedback
+GROUP BY ProductID
+HAVING AVG(Rating) >= 4;
+
+#or products with more than 2 feedbacks or 5 feedbacks
+SELECT ProductID, COUNT(*) AS FeedbackCount
+FROM Feedback
+GROUP BY ProductID
+HAVING COUNT(*) > 2;
+
+# --------------- Inner query --------------
+SELECT * FROM OrderItem WHERE OrderID IN (
+    SELECT OrderID FROM productOrder WHERE CustomerID = 5
+);
+
+# All orders of Laptop 
+# so i want to check all the orders placed by whom (what is the customerId) and on which date they placed related to Product category
+# lets say during discount week 
+# all order infomation is inside productorder table , match orderid from product order and orderItem and get OrderItems only for laptops
+Select po.orderid,po.customerid,po.orderdate , 'laptop' as category from productorder as po
+where orderid in (
+		select OrderID from 
+        orderItem 
+        where productId in 
+        ( select productid from product where category = 'laptop')
+        );
+
+# ------ Apply over feedback -----
+# i want to check the feedbacks of Laptop
+
+select feedbackId , productid , rating , 'laptop' as productcategory from 
+feedback where productId in
+(select productid from product 
+where category = 'laptop');
+
+# similary , get the cancelled shipment
+select shipmentid , carrier from shipment where orderid in 
+		(select orderid from orderitem where productid in
+				( select ProductID from product where category = 'food')
+		);
+
+
+select productId , avg(rating) from feedback group by rating ; # will not work 
+
+select productId , avg(rating) from feedback group by ProductID ;
+
+# more better way to give us round of things
+select productId ,  round(avg(rating),1) as Rating
+from feedback 
+group by ProductID;
+
+# i want to check product name or other details of cancelled order
+select productid,productname,category, 'cancelled' as ShipmentStatus from product where productid in 
+		(select productid from orderitem where orderid in (
+			select orderid from shipment where status = 'cancelled')
+		);
+
+
+                    
+
+

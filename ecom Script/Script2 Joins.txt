@@ -1,0 +1,152 @@
+# 	A Joins connects two or more tables based on related column based on foreign key 
+# 	so 
+
+# Join 			:	Combines rows from multiple tables  
+# subquery 		:	filter the values of outter query 
+# So we use Joins when we have to display the data of two tables , means combine the output & renders it 
+# we used On , which tells us that how 2 tables relate for example Match orders to items & we cannot use on outside Join 
+
+# Default Join is inner Join 
+
+
+#scenario 1 
+# Get the OrderId and Shipment Status 
+SELECT po.OrderID, s.Status
+FROM productOrder po
+JOIN Shipment s ON po.OrderID = s.OrderID;
+ # both will same  , as Default Join is Inner Join  , Both Match same column & return the same column too
+ # so the Point is table order doesn't  matters in Inner Join case
+select po.orderid , s.status
+from shipment s
+join productorder po on po.OrderID = s.OrderID;
+
+#Based on the same Scenation lets get the order Id and Cutomer Name & Customer Address
+select po.orderId , c.name, c.phone, c.address 
+from productorder po
+join customer c
+on c.CustomerID = po.CustomerID;
+# we can use inner join too instead of Join
+
+# Same as Order with shipment status , complaints with customerInfo 
+
+# -----------------------------------------------------------------------------------
+# inner Join with where clause with multiple Joins 
+# we want OrderId & Status , ProductName & category  & Quantity in each Order  which is available in order item
+
+select po.orderId , po.status , p.productName , p.category , oi.quantity 
+from productorder po
+Join orderitem oi
+	on oi.orderID = po.OrderID
+Join product p 
+	on p.ProductID = oi.ProductID
+where Po.Status = 'Confirmed' 
+and
+	  p.category = 'Food';
+
+# So now the Question Comes , when to Use Inner Join 
+# Answer : when we want data from both the tables and it returns where values gives true
+# Q : When not to use Inner Join 
+# Answer : When We want to include all rows of the table even if condition is not satisfied
+# Or we can say Inner Join Excludes (don't include) null or unmatched records 
+
+# Scenario 2 
+# Get Details of category & Avg rating 
+
+select  p.category , round(avg(f.rating),1) as avgrating
+from feedback f
+Join product p on f.productId = p.productId
+group by p.category;
+
+
+# Scenario 3
+# Show the orders with the product name & Quantity in hand 
+# how they linked based on orderitem table which has orderId and productId
+
+select po.orderid , productname , quantity 
+from productorder as po
+join orderitem oi On po.OrderID = oi.orderID
+join product p on oi.productID = p.ProductID;
+
+# -----------------------------------------------------------------------------------------------------------
+#  left join  : Put the table in left which comes first in the from clausee
+# Even if the result is the same, LEFT JOIN is more readable and predictable 
+#  Developers expect the “main” table to come first.
+# -----------------------------------------------------------------------------------------------------------
+#  So Left Join includes all rows of Left table and keep right table column values null and vice cersa
+
+SELECT o.OrderID, s.Status
+FROM productOrder o
+LEFT JOIN Shipment s ON o.OrderID = s.OrderID;
+# this data gives me few records null
+
+
+#---------------------------------------------------------------------------------------------------------
+#    Self Join , When one column apply Joins on itself  lets say Employee - manager Schenario 
+#    and Customer referal to another customer
+# -------------------------------------------------------------------------------------------------------
+
+# lets compare the feedback of Same product with different feedback
+SELECT 
+  f1.FeedbackID AS FeedbackIDA,
+  f2.FeedbackID AS FeedbackIDB,
+  f1.ProductID,
+  p.ProductName,
+  p.Category,
+  f1.Rating AS RatingA,
+  f2.Rating AS RatingB
+FROM Feedback f1
+JOIN Feedback f2 
+  ON f1.ProductID = f2.ProductID AND f1.FeedbackID <> f2.FeedbackID
+JOIN Product p 
+  ON f1.ProductID = p.ProductID;
+  
+  # or getting the Products of Similar Category 
+  SeLECT 
+  p1.ProductName AS ProductA_name,
+  p2.ProductName AS ProductB_Name,
+  p1.Category
+FROM Product p1
+JOIN Product p2 ON p1.Category = p2.Category AND p1.ProductID <> p2.ProductID;
+
+# Very Important 
+# I want to See the product having Max orders in its Categorty
+  SELECT 
+  p.ProductID,
+  p.ProductName,
+  p.Category,
+  COUNT(oi.OrderID) AS TotalOrders
+FROM Product p
+JOIN OrderItem oi ON p.ProductID = oi.ProductID
+GROUP BY p.ProductID, p.ProductName, p.Category
+HAVING COUNT(oi.OrderID) = (
+  SELECT MAX(OrderCount)
+  FROM (
+    SELECT COUNT(*) AS OrderCount
+    FROM Product p2
+    JOIN OrderItem oi2 ON p2.ProductID = oi2.ProductID
+    WHERE p2.Category = p.Category
+    GROUP BY p2.ProductID
+  ) AS CategoryOrders
+);
+  
+ # and Applying orderBy 
+SELECT 
+  p.ProductID,
+  p.ProductName,
+  p.Category,
+  COUNT(oi.OrderID) AS TotalOrders
+FROM Product p
+JOIN OrderItem oi 
+	ON p.ProductID = oi.ProductID
+GROUP BY p.ProductID, p.ProductName, p.Category
+HAVING COUNT(oi.OrderID) = (
+  SELECT MAX(OrderCount)
+  FROM (
+    SELECT COUNT(*) AS OrderCount
+    FROM Product p2
+    JOIN OrderItem oi2 ON p2.ProductID = oi2.ProductID
+    WHERE p2.Category = p.Category
+    GROUP BY p2.ProductID
+  ) AS CategoryOrders
+)
+ORDER BY TotalOrders DESC;
