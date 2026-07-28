@@ -1,0 +1,3 @@
+Project is based on Simple Layered Architecture 
+Add MySQL Jar file before executing the product 
+Class ProductDB is responsible connection with the DB
