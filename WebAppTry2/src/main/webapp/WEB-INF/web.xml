@@ -20,7 +20,6 @@
     <url-pattern>/pageone</url-pattern>
     <url-pattern>/home</url-pattern>
   </servlet-mapping>
-  
   <servlet>
     <description></description>
     <display-name>ProductServlet</display-name>
@@ -31,5 +30,15 @@
     <servlet-name>ProductServlet</servlet-name>
     <url-pattern>/ProductServlet</url-pattern>
     <url-pattern>/productservlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>UpdateQuantityServlet</display-name>
+    <servlet-name>UpdateQuantityServlet</servlet-name>
+    <servlet-class>p1.UpdateQuantityServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>UpdateQuantityServlet</servlet-name>
+    <url-pattern>/UpdateQuantityServlet</url-pattern>
   </servlet-mapping>
 </web-app>

@@ -48,7 +48,7 @@ public class ProductServlet extends HttpServlet{
 						out.print("<td> "+p.getProductName()+"</td>");
 						out.print("<td> "+p.getPrice()+"</td>");
 						out.print("<td> "+p.getStockQuantity()+"</td>");
-						out.print("<td> <a href='StockUpdateServlet?id="+p.getProductId()+"'/>update</td>");
+						out.print("<td> <a href='UpdateQuantityServlet?id="+p.getProductId()+"&q="+p.getStockQuantity()+"'/>update</td>");
 						out.print("<td> <a href='DeleteServlet?id="+p.getProductId()+"'/>delete</td>");
 						
 							
@@ -63,7 +63,7 @@ public class ProductServlet extends HttpServlet{
 
 			System.out.println(e);
 			out.print(e);
-			// some code to handle error page
+			
 		}
 		
 	}

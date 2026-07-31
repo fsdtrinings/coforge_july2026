@@ -95,4 +95,48 @@ public class ProductDB {
 		return allProducts;
 	}
 
+
+	public boolean doUpdateQuantity(int quantity , int id)throws Exception
+	{
+		boolean status = false;
+		String sql = "update cfg.product SET stockQuantity = ? where productId = ?";
+		ps = con.prepareStatement(sql);
+		ps.setInt(1, quantity);
+		ps.setInt(2, id);
+		int rowsChange  = ps.executeUpdate();
+		return rowsChange>0?true:false;
+	}
+	
+	
+	
+	
+	
+	
 }// end class
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -26,6 +26,16 @@ public class BusinessOperations {
 	
 	
 	
+	public boolean doUpdateQuantity(int quantity , int id)throws Exception
+	{
+		
+		return db.doUpdateQuantity(quantity, id);
+		
+	}
+	
+	
+	
+	
 	public List<Product> getAllProducts()throws Exception
 	{
 		String checkUserRole = "valid";
